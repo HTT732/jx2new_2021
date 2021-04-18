@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ClientController;
 // use Illuminate\Console\Command;
 // use Illuminate\Support\Facades\Cache;
 // use Illuminate\Support\Facades\DB;
@@ -40,7 +41,7 @@
 // });
 
 // Trang chu
-Route::get('/', 'ClientController@getTrangChu')->name('trangchu');
+// Route::get('/', 'ClientController@getTrangChu')->name('trangchu');
 // Route::get('register', 'ClientController@getRegister')->name('dangky');
 // Route::post('register', 'ClientController@postRegister')->name('postdangky');
 // Route::post('check-username', 'ClientController@checkUsername');
@@ -63,6 +64,9 @@ Route::get('/', 'ClientController@getTrangChu')->name('trangchu');
 // Route::get('xoa-cache', function(){
 // 	return Cache::pull('sanpham');
 // });
+
+
+Route::get('/', [ClientController::class, 'test'])->name('trangchu');
 
 
 

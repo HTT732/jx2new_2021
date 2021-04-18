@@ -17,7 +17,7 @@ class CreateMessagesTable extends Migration
             $table->id();
             $table->string('title');
             $table->longText('content');
-            $table->dateTime('time');
+            $table->dateTime('time')->nullable();
             $table->string('sender', 100);
             $table->string('receiver', 100);
 
