@@ -19,7 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->string('email')->unique();
             $table->string('nickname', 100)->nullable();
-            $table->string('sdt', 15)->nullable();
+            $table->string('sdt', 20)->nullable();
             $table->string('fb')->nullable();
             $table->integer('exp')->default(0);
             $table->integer('level');

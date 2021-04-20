@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers;
 
+// Request 
 // use App\Http\Requests\DangSanPhamRequest;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
+
+// Models
 use App\Models\Image;
 use App\Models\LikeView;
 use App\Models\TypeOfNEws;
@@ -17,115 +22,97 @@ use App\Models\News;
 // use App\test;
 // use Barryvdh\Debugbar\Facade as Debugbar;
 use Illuminate\Http\Request;
-// use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Auth;
 // use Illuminate\Support\Facades\Cache;
 // use Illuminate\Support\Facades\File;
-// use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Hash;
 // use Illuminate\Support\Facades\Validator;
 // use Intervention\Image\Facades\Image;
 // use Pusher\Pusher;
 
 class ClientController extends Controller
 {
-    function test () {
-        $result = User::all()->toArray();
-        dd($result);
+    // public function __construct() {
+    //     $this->middleware(['auth','verified']);
+    // }
+
+    function getTrangChu () {
+        $marquee = Message::where('typeOfNewID', 3)->orderBy('id', 'DESC')->first();
+        $introduce = Message::where('typeOfNewID', 4)->orderBy('id', 'ASC')->first();
+        $server_game = ServerGame::all();
+    	return view('clients.index', compact('marquee', 'introduce', 'server_game'));
     }
-    // function getTrangChu () {
-    //     $marquee = Message::where('idLoaiTin', 3)->orderBy('id', 'DESC')->first();
-    //     $introduce = Message::where('idLoaiTin', 4)->orderBy('id', 'ASC')->first();
-    //     $server_game = ServerGame::all();
-    // 	return view('clients.index', compact('marquee', 'introduce', 'server_game'));
-    // }
 
-    // function postTrangChu (Request $request) {
-    //     // dd($request);
-    // }
+    function postTrangChu (Request $request) {
+        // dd($request);
+    }
 
-    // function getTraDaoQuan () {
-    // 	return view('clients.news');
-    // }
+    function getTraDaoQuan () {
+    	return view('clients.news');
+    }
 
-    // function getRegister () {
-    // 	return view('clients.register');
-    // }
+    // Register 
+    function getRegister () {
+        if (Auth::check())
+            return redirect('/');
+        else
+            return view('clients.register');
+    }
 
-    // function postRegister(Request $request) {
-    // 	$validator = Validator::make($request->all(), 
-    // 		[
-    // 			'username' => 'unique:users,username|min:6|regex:/^[a-zA-Z0-9]+$/',
-    // 			'password' => 'min:6',
-    // 			're_password' => 'same:password'
-    // 		],
-    // 		[
-    // 			'username.unique' => 'Tên tài khoản đã tồn tại',
-    // 			'username.min' => 'Tên tài khoản phải dài ít nhất 6 ký tự',
-    // 			'username.regex' => 'Tài khoản không thể chứa ký tự đặc biệt',
-    // 			'password.min' => 'Mật khẩu phải dài ít nhất 6 ký tự',
-    // 			're_password.same' => 'Xác nhận mật khẩu không trùng khớp',
-    // 		]
-    // 	);
-    // 	if ($validator->fails()){
-    // 		return redirect('register')->withErrors($validator)->withInput();
-    // 	}
-    // 	else{
-	//     	$user = new User;
-	//     	$user->username = $request->username;
-	//     	$user->password = Hash::make($request->password);
-	//     	$user->level = 1;
-	//     	$user->save();
-    //         if (!Auth::check() && Auth::attempt(['username'=>$request->username, 'password'=>$request->password])){
-    // 	    	return redirect('/');
-    //         }
-    //         else {
-    //             return redirect('/')->with('error_login');
-    //         }
-    // 	}
-    // }
+    function postRegister(RegisterRequest $request) {
+        $user = new User;
+        $user->username = $request->username;
+        $user->password = Hash::make($request->password);
+        $user->email = $request->username . '@gmail.com';
+        $user->level = 1;
+        $user->save();
+        // User::register($request);
+        // $user->username = $request->username;
+        // $user->password = Hash::make($request->password);
+        // $user->level = 1;
+        // $user->save();
+        if (!Auth::check() && Auth::attempt(['username'=>$request->username, 'password'=>$request->password])){
+            return redirect('/');
+        }
+        else {
+            return redirect('/')->with('error_login');
+        }
+    }
 
     // function checkUsername (Request $request) {
     // 	$checkUser = User::where('username', $request->username)->get();
     // 	return count($checkUser);
     // }
 
-    // function getLogin () {
-    //     return view('clients.login');
-    // }
+    // Login 
+    function getLogin () {
+        if (Auth::check())
+            return redirect ('/');
+        else
+            return view('clients.login');
+    }
 
-    // function postLogin (Request $request) {
-    //     $validator = Validator::make($request->all(), 
-    //         [
-    //             'username' => 'required',
-    //             'password' => 'required'
-    //         ], 
-    //         [
-    //             'username.required' => 'Vui lòng nhập tài khoản',
-    //             'password.required' => 'Vui lòng nhập mật khẩu',
-    //         ]);
-    //     if ($validator->fails()){
-    //         return view('clients.login')->withErrors($validator);
-    //     }
-    //     else {
-    //         $remember = true;
-    //         $check_user_exists = User::where('username', $request->username)->count();
-    //         if ($check_user_exists == 0)
-    //             return redirect('login')->with('login_faild', 'Tài khoản không tồn tại');
-    //         else {
-    //             Auth::check() ? Auth::logout() : '';
-    //             if (Auth::attempt(['username'=>$request->username, 'password'=>$request->password]))
-    //                 return redirect('/');
-    //             else
-    //                 return redirect('login')->with('login_faild', 'Mật khẩu không đúng')->withInput();
-    //         }
-    //     }
-    // }
+    function postLogin (LoginRequest $request) {
+        $remember = true;
+        $check_user_exists = User::where('username', $request->username)->count();
 
-    // function getLogout () {
-    //     if (Auth::check()){
-    //         Auth::logout();
-    //         return redirect('/');
-    //     }
-    // }
+        if ($check_user_exists == 0)
+            return redirect('login')->with('login_faild', 'Tài khoản không tồn tại');
+        else {
+            if (Auth::attempt(['username'=>$request->username, 'password'=>$request->password]))
+                return redirect('/');
+            else
+                return redirect('login')->with('login_faild', 'Mật khẩu không đúng')->withInput();
+        }
+    }
+
+    // LogOut 
+    function getLogout () {
+        if (Auth::check()){
+            Auth::logout();
+            return redirect('/');
+        }
+    }
 
     // function loadSanPham (Request $request) {
     //     // $sanpham = SanPham::join('server_games', 'san_phams.idServer', 'server_games.id')->join('like_views', 'san_phams.idLikeView', 'like_views.id')->where('idUser', $request->idUser)->select('san_phams.id', 'san_phams.tieude','san_phams.thumb', 'san_phams.noidung', 'san_phams.kieugia', 'san_phams.gia', 'san_phams.created_at', 'server_games.servername', 'like_views.sum_like', 'like_views.sum_view')->get();

@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\PostsController;
+use App\Http\Controllers\SanPhamController;
 // use Illuminate\Console\Command;
 // use Illuminate\Support\Facades\Cache;
 // use Illuminate\Support\Facades\DB;
@@ -9,11 +11,11 @@ use App\Http\Controllers\ClientController;
 
 
 
-// Route::prefix('admin')->middleware('checkAdmin')->group(function () {
-// 	Route::prefix('san-pham')->group(function () {
-// 	    Route::get('/', 'SanPhamController@getSanPham')->name('sanpham');
+Route::prefix('admin')->middleware('checkAdmin')->group(function () {
+	Route::prefix('san-pham')->group(function () {
+	    Route::get('/', [SanPhamController::class , 'getSanPham'])->name('sanpham');
+	});
 
-// 	});
 // 	Route::prefix('bai-viet')->group(function () {
 // 	    Route::get('/', 'BaiVietController@getBaiViet')->name('baiviet');
 
@@ -38,35 +40,36 @@ use App\Http\Controllers\ClientController;
 
 // 	});
    
-// });
+});
 
 // Trang chu
-// Route::get('/', 'ClientController@getTrangChu')->name('trangchu');
-// Route::get('register', 'ClientController@getRegister')->name('dangky');
-// Route::post('register', 'ClientController@postRegister')->name('postdangky');
+Route::get('/', [ClientController::class, 'getTrangChu'])->name('trangchu');
+Route::get('register', [ClientController::class, 'getRegister'])->name('dangky');
+Route::post('register', [ClientController::class, 'postRegister'])->name('postRegister');
 // Route::post('check-username', 'ClientController@checkUsername');
-// Route::get('login', 'ClientController@getLogin')->name('dangnhap');
-// Route::post('login', 'ClientController@postLogin')->name('dangnhap');
-// Route::get('logout', 'ClientController@getLogout')->name('dangxuat');
+Route::get('login', [ClientController::class, 'getLogin'])->name('dangnhap');
+Route::post('login', [ClientController::class, 'postLogin'])->name('dangnhap');
+Route::get('logout', [ClientController::class, 'getLogout'])->name('dangxuat');
 // Route::post('load-san-pham', 'ClientController@loadSanPham');
 // Route::post('dang-bai', 'ClientController@dangBai')->name('dangbai');
 // Route::post('chi-tiet-san-pham', 'ClientController@loadChiTietSanPham');
 // Route::post('xoa-san-pham', 'ClientController@xoaSanPham');
 
 // Son Trang
-// Route::get('son-trang', 'PostsController@getSonTrang')->name('sontrang');
+Route::get('son-trang', [PostsController::class, 'getSonTrang'])->name('sontrang');
 // Route::get('product-status', 'PostsController@productStatus');
 
 // Tra dao quan
-// Route::get('tra-dao-quan', 'ClientController@getTraDaoQuan')->name('tradaoquan');
+Route::get('tra-dao-quan', [ClientController::class, 'getTraDaoQuan'])->name('tradaoquan');
 
 //##############################
 // Route::get('xoa-cache', function(){
 // 	return Cache::pull('sanpham');
 // });
 
+// Auth::routes(['verify' => true]);
 
-Route::get('/', [ClientController::class, 'test'])->name('trangchu');
+
 
 
 
