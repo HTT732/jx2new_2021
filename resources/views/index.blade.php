@@ -534,7 +534,8 @@
                         <div id="book" class="sub-control dangcapnhat">
                             {{-- Nhiệm vụ --}}
                         </div>
-                        <div id="baiviet" class="sub-control" title="Bài đăng" onclick="loadSanPham({{Auth::user()->id}})">
+                        <div id="baiviet" class="sub-control" title="Bài đăng">
+                            <input class="hidden" value="{{Auth::user()->id}}">
                             {{-- Bài đăng --}}
                         </div>
                     </ul>

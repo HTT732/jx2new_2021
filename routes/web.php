@@ -50,8 +50,8 @@ Route::post('register', [ClientController::class, 'postRegister'])->name('postRe
 Route::get('login', [ClientController::class, 'getLogin'])->name('dangnhap');
 Route::post('login', [ClientController::class, 'postLogin'])->name('dangnhap');
 Route::get('logout', [ClientController::class, 'getLogout'])->name('dangxuat');
-// Route::post('load-san-pham', 'ClientController@loadSanPham');
-// Route::post('dang-bai', 'ClientController@dangBai')->name('dangbai');
+Route::post('load-san-pham', [ClientController::class, 'loadSanPham']);
+Route::post('dang-bai', [ClientController::class, 'dangBai'])->name('dangbai');
 // Route::post('chi-tiet-san-pham', 'ClientController@loadChiTietSanPham');
 // Route::post('xoa-san-pham', 'ClientController@xoaSanPham');
 
@@ -67,9 +67,5 @@ Route::get('tra-dao-quan', [ClientController::class, 'getTraDaoQuan'])->name('tr
 // 	return Cache::pull('sanpham');
 // });
 
-// Auth::routes(['verify' => true]);
-
-
-
-
-
+// Auth::routes();
+// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

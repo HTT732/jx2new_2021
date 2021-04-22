@@ -42,7 +42,6 @@
 					<div class="form-group row">
 						<label class="label">Email</label>
 						<input id="email" type="text" name="email" class="form-control col-10 email" maxlength="50" required placeholder="Nhập địa chỉ email" oninvalid="PasswordInvalidMsg(this);" oninput="PasswordInvalidMsg(this);"/>
-						<label style="font-size: 0.8em; font-weight: 500;">Mật khẩu phải nhiều hơn 6 ký tự</label>
 					</div>
 					<div class="form-group row">
 						<label class="label">Mật khẩu</label>

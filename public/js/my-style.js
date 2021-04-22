@@ -65,9 +65,17 @@ $(document).ready(function(){
 	});
 
 	$("#baiviet").click(function(){
-		$("[data-hidden='all']").css("display", "none");
-		$(".baiviet").toggle();
-	})
+		$this = $("#baiviet");
+
+		if (!$this.hasClass('active')) {
+			console.log('zo');
+			$("[data-hidden='all']").css("display", "none");
+			$(".baiviet").toggle();
+			loadSanPham(54);
+
+		}
+	});
+
 	//hide phần thông tin các nhân hoặc phần giới thiệu khi click vào nút close
 	$(".btn-close-control").click(function(){
 		$("[data-hidden='all']").hide();
@@ -119,9 +127,6 @@ $(document).ready(function(){
 	});
 
 	//Ẩn/Hiện hand-click sau khi load trang
-	setTimeout(function(){
-		$('.hand-click').fadeIn();
-	}, 500);
 	$('#control').mouseenter(function(){
 		$('.hand-click').fadeOut();
 	});
@@ -141,6 +146,7 @@ $(document).ready(function(){
 	$('#dangbai #show-errors-form-data button').click(function(){
 		$('#dangbai #show-errors-form-data').fadeOut();
 	});
+
 
 	$('#dangbai').click(function(e){
 		var show_errors = $(this).find('#show-errors-form-data');
@@ -162,6 +168,7 @@ function loadSanPham(idUser){
 		$('.noidungbaiviet').html('');// reset lại thông báo lỗi nếu load lần sau
 		var CSRF_TOKEN = $('meta[name="_token"]').attr('content');
 		
+		// Ajax load san pham
 		$.ajax({
 			url: 'load-san-pham',
 			type: 'POST',
@@ -172,13 +179,39 @@ function loadSanPham(idUser){
 			},
 			async: true,
 			success: function(data){
-
 				$('#iconLoadSanPham').hide();
 				if (data.length > 0){
 					for (var i = 0; i < data.length; i++){
 						$('#baiviet').addClass('active');
 						$('.noidungbaiviet').append(
-							'<div class="col col-4 col-md-4 col-lg-3 on"><div class="card"><div id="cardHeader"><a href="#sp'+data[i]['id']+'" data-toggle="modal" onclick="loadChiTietSanPham('+data[i]['id']+',this)"><img style="background:url(\''+data[i]["thumb"]+'\');"  class="thumbnail-san-pham"></a><i class="sp'+ data[i]['id'] +'"></i></div><div id="scrollStyle1" class="card-body"> <div class="form-inline float-left"> <i class="fas fa-users"></i><span>'+ data[i]['sum_view'] +'</span></div><div class="form-inline float-right"><i class="fas fa-thumbs-up"></i><span>'+ data[i]['sum_like'] +'</span></div><div class="clearfix"></div><h5 class="card-title mb-1"><a data-toggle="modal" href="#sp'+data[i]['id']+'" onclick="loadChiTietSanPham('+data[i]['id']+',this)">'+ data[i]['tieude'] +'</a></h5></div> <div class="card-footer p-1"> <button type="button" data-toggle="modal" data-target="#sp'+data[i]['id']+'" class="btn btn-primary btn-sm mx-1 px-2 py-0 float-left" onclick="loadChiTietSanPham('+data[i]['id']+',this)">Chi tiết</button> <button type="button" class="float-right btn btn-outline-success mx-1 px-2 py-0 btn-sm btn-del" onclick="deleteSP('+data[i]['id']+',this)">Xóa</button> <button type="button" class="float-right btn btn-outline-success mx-1 px-2 py-0 btn-sm btn-edit">Sửa</button> </div> </div> </div>'
+							'<div class="col col-4 col-md-4 col-lg-3 on">'+
+								'<div class="card">'+
+									'<div id="cardHeader">'+
+										'<a href="#sp'+data[i]['id']+'" data-toggle="modal" onclick="loadChiTietSanPham('+data[i]['id']+',this)">'+
+											'<img style="background:url(\''+data[i]["thumb"]+'\');"  class="thumbnail-san-pham"></a>'+
+												'<i class="sp'+ data[i]['id'] +'"></i>'+
+									'</div>'+
+									'<div id="scrollStyle1" class="card-body">'+
+										'<div class="form-inline float-left"> '+
+											'<i class="fas fa-users"></i>'+
+											'<span>'+ data[i]['sum_view'] +'</span>'+
+										'</div>'+
+										'<div class="form-inline float-right">'+
+											'<i class="fas fa-thumbs-up"></i>'+
+											'<span>'+ data[i]['sum_like'] +'</span>'+
+										'</div>'+
+										'<div class="clearfix"></div>'+
+										'<h5 class="card-title mb-1">'+
+											'<a data-toggle="modal" href="#sp'+data[i]['id']+'" onclick="loadChiTietSanPham('+data[i]['id']+',this)">'+ data[i]['tieude'] +'</a>'+
+										'</h5>'+
+									'</div>'+
+									'<div class="card-footer p-1">'+
+										'<button type="button" data-toggle="modal" data-target="#sp'+data[i]['id']+'" class="btn btn-primary btn-sm mx-1 px-2 py-0 float-left" onclick="loadChiTietSanPham('+data[i]['id']+',this)">Chi tiết</button>'+
+										'<button type="button" class="float-right btn btn-outline-success mx-1 px-2 py-0 btn-sm btn-del" onclick="deleteSP('+data[i]['id']+',this)">Xóa</button>'+
+										'<button type="button" class="float-right btn btn-outline-success mx-1 px-2 py-0 btn-sm btn-edit">Sửa</button>'+
+									'</div>'+
+								'</div>'+
+							'</div>'
 						); 
 					} 
 				}
@@ -193,6 +226,7 @@ function loadSanPham(idUser){
 		});
 	}
 }
+
 function loadChiTietSanPham(idSP, el){
 	$('.noidungbaiviet #cardHeader i.sp'+idSP).addClass('loading-2');
 	var CSRF_TOKEN = $('meta[name="_token"').attr('content');
@@ -238,6 +272,7 @@ function selectFile(){
 	fileElem.click();
 }
 
+// Add file vào mảng
 function selectImage(files){
 	if (files.length > 0){
 		imageList = [];
@@ -258,28 +293,32 @@ function showImage(listImage){
 		else{
 			size = parseFloat(size/1024).toFixed(2) + " KB";
 		}
-		if (checkFileType(listImage[i]) == false || tam > 2.0 || tam === 0.0){
-			$('#dangbai #filelist').append("<div class='thumb-img img-thumbnail'><img class='img-thumbnail' src='"+ URL.createObjectURL(listImage[i]) +"'><i onclick='deleteFile("+ i +")'></i> <p class='text-truncate text-danger'><small title='"+ listImage[i].name +"'>"+ listImage[i].name +"</small><br><small>"+ size +"</small></p></div>");
-		}
-		else
-			$('#dangbai #filelist').append("<div class='thumb-img img-thumbnail'><img class='img-thumbnail' src='"+ URL.createObjectURL(listImage[i]) +"'><i onclick='deleteFile("+ i +")'></i> <p class='text-truncate'><small title='"+ listImage[i].name +"'>"+ listImage[i].name +"</small><br><small>"+ size +"</small></p></div>");
 
+		if (checkFileType(listImage[i]) == false || tam > 2.0 || tam === 0.0){
+			$('#dangbai #filelist').append(
+				"<div class='thumb-img img-thumbnail'>"+
+					"<img class='img-thumbnail' src='"+ URL.createObjectURL(listImage[i]) +"'>"+
+					"<i onclick='deleteFile("+ i +")'></i>"+
+					"<p class='text-truncate text-danger'>"+
+						"<small title='"+ listImage[i].name +"'>"+ listImage[i].name +"</small><br><small>"+ size +"</small>"+
+					"</p>"+
+				"</div>"
+			);
+		}
+		else {
+			$('#dangbai #filelist').append(
+				"<div class='thumb-img img-thumbnail'>"+
+					"<img class='img-thumbnail' src='"+ URL.createObjectURL(listImage[i]) +"'>"+
+						"<i onclick='deleteFile("+ i +")'></i>"+
+						"<p class='text-truncate'>"+
+							"<small title='"+ listImage[i].name +"'>"+ listImage[i].name +"</small><br><small>"+ size +"</small>"+
+						"</p>"+
+				"</div>"
+			);
+		}
 	}
-		// $.ajax({
-		// 	url: 'test',
-		// 	type: 'post',
-		// 	data: data,
-		// 	contentType: false,
-		// 	processData: false,
-		// 	cache: false,
-		// 	success: function(data){
-		// 		console.log(data);
-		// 	},
-		// 	error: function(err){
-		// 		console.log(err);
-		// 	}
-		// });
 }
+
 function deleteFile(index){
 	imageList.splice(index,1);
 	showMessage(imageList.length);
@@ -292,12 +331,14 @@ function showMessage(count){
 	else
 		$('#dangbai #showmessage').val("Chưa chọn hình ảnh");
 }
+
 //Cac ham check loi data
 function checkRequiredMinMax(arr, value, min, max, eltype){
 	// arr la mang truyen vao de chua error
 	// value la bien can check
-	//min la do dai toi thieu can check
-	//mã la doi dai toi da can check
+	// min la do dai toi thieu can check
+	// max la doi dai toi da can check
+
 	if (value.trim().length == 0){
 		arr.push("Chưa nhập " + eltype.toLowerCase());
 		return;
@@ -307,6 +348,7 @@ function checkRequiredMinMax(arr, value, min, max, eltype){
 	if (value.trim().length > max)
 		arr.push(eltype + " vượt quá độ dài cho phép");
 }
+
 function checkFileSize(arr, filelist, maxsize){
 	for (var i = 0; i < filelist.length; i++){
 		var tam = Math.round((filelist[i].size / 1024 / 1024) * 1000)/1000;
@@ -317,6 +359,7 @@ function checkFileSize(arr, filelist, maxsize){
 			arr.push("File "+ filelist[i].name +" không hợp lệ (kích thước bằng 0)");
 	}
 }
+
 function checkFileType(filelist){
 	var allowedExtensions = /(\/jpg|\/jpeg|\/png|\/gif)$/i;
 	if(!allowedExtensions.exec(filelist.type)){
@@ -342,15 +385,13 @@ $(function(){
 });
 
 function dangSanPham(){
-	var errors = [];
-	
 	// Khai báo biến lấy giá trị
 	var CSRF_TOKEN = $('#dangbai input[name="dangbai_token"]').val();
 	var server = $('#dangbai select[name="server"]').val();
 	var tieude = $('#dangbai input[name="tieude"]').val();
 	var noidung = CKEDITOR.instances['noidungchitiet'].getData();
-
 	var kieugia = '';
+
 	if($('#dangbai .price-form input').attr('price-type') != "khac"){
 		kieugia = $('#dangbai .price-form input').attr('price-type');
 	}
@@ -368,30 +409,32 @@ function dangSanPham(){
 	var fb = $('#dangbai input[name="fb"]').val();
 	var iduser = $('#dangbai button[type=submit]').attr('user-id');
 
-	// check lỗi data lưu vào mảng errors
-		// check server
+	/* check lỗi data lưu vào mảng errors */
+	// check server
 	checkRequiredMinMax(errors, server, 1, 50, 'Server');
-		// check lỗi tiêu đề
+
+	// check lỗi tiêu đề
 	checkRequiredMinMax(errors, tieude, 6, 255, 'Tiêu đề');
 
-		// check lỗi nội dung
+	// check lỗi nội dung
 	checkRequiredMinMax(errors, noidung, 20, 5000, 'Nội dung');
 
-		// check đã chọn file hay chưa
+	// check đã chọn file hay chưa
 	if (imageList.length ==0)
 		errors.push('Chưa chọn file');
 
-		// check dạng file
+	// check dạng file
 	for (var i = 0; i < imageList.length; i++){
 		if(checkFileType(imageList[i]) == false){
-			errors.push('Có file không đúng định dạng (chỉ nhận .jpg/ .jpeg/ .png/ .gif)');
+			errors.push('\"' + imageList[i].name + '\"' + ' không đúng định dạng');
 			break;
 		}
 	}
-		// check kích thước file
+
+	// check kích thước file
 	checkFileSize(errors, imageList, 2.0);
 
-		// check giá
+	// check giá
 	if (kieugia != "khac"){
 		if (gia.trim().length == 0)
 			errors.push('Chưa định giá cho sản phẩm (giá > 0)');
@@ -404,7 +447,8 @@ function dangSanPham(){
 				errors.push('Giá không thể là ký tự');
 		}
 	}
-		// check điện thoại
+
+	// check điện thoại
 	if (sdt.length > 0){
 		var regex = /^[0-9][1-9][0-9]{8,9}$/;
 		if (!regex.test(sdt))
@@ -424,8 +468,7 @@ function dangSanPham(){
 		$('#dangbai #show-errors-form-data').show();
 		$('#dangbai button[type="submit"]').prop("disabled", false);
 	}
-	else {
-		// Nếu không có lỗi thì ajax đến controller
+	else { // Nếu không có lỗi thì gọi ajax đến controller
 		$('#dangbai #show-errors-form-data .modal-body').html('');
 		$('#dangbai #show-errors-form-data').fadeOut();
 
@@ -449,14 +492,14 @@ function dangSanPham(){
 		$.ajax({
 			url: 'dang-bai',
 			type: 'post',
-			data:data,
+			data: data,
 			contentType: false,
 			processData: false,
 			cache: false,
 			success: function(data){
-				if (data.trim() == 'success'){
+				if (data == 'success'){
 					$('#dangbai #show-errors-form-data .modal-header h6').html("* Success");
-					$('#dangbai #show-errors-form-data .modal-body').addClass('text-center').append('<p style="color:green">Đăng thành công</p>')
+					$('#dangbai #show-errors-form-data .modal-body').addClass('text-center').append('<p style="color:green">Đăng thành công</p>');
 					$('#dangbai #show-errors-form-data').show();
 					location.reload();
 				}
@@ -471,7 +514,7 @@ function dangSanPham(){
 				$('#dangbai #submit-loading').removeClass('loading');
 			},
 			error: function(err){
-				console.log(err);
+				$('#dangbai #show-errors-form-data .modal-body').append('<li>Đã xảy ra lỗi, vui lòng thử lại sau.</li>');
 				$('#dangbai #submit-loading').removeClass('loading');
 				$('#dangbai button[type="submit"]').prop("disabled", false);
 			}
