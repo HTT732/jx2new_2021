@@ -311,7 +311,7 @@ body {background: lightsteelblue;}
 
 /* Nội dung chi tiết bài viết */
 #detail .modal-footer {font-size:0.9rem;}
-#detail .modal-footer .like-footer {
+.like-footer {
 	background:url('../image/like.png') no-repeat;
 	background-size:100%; 
 	width:35px; 
@@ -417,6 +417,12 @@ body {background: lightsteelblue;}
 	font-size: 1.3rem;
 	margin-right: 7px;
 }
+
+.disable-click {
+	cursor: no-drop;
+    pointer-events: none;
+}
+
 
 
 

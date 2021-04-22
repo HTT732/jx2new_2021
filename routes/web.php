@@ -52,7 +52,7 @@ Route::post('login', [ClientController::class, 'postLogin'])->name('dangnhap');
 Route::get('logout', [ClientController::class, 'getLogout'])->name('dangxuat');
 Route::post('load-san-pham', [ClientController::class, 'loadSanPham']);
 Route::post('dang-bai', [ClientController::class, 'dangBai'])->name('dangbai');
-// Route::post('chi-tiet-san-pham', 'ClientController@loadChiTietSanPham');
+Route::post('chi-tiet-san-pham', [ClientController::class, 'loadChiTietSanPham']);
 // Route::post('xoa-san-pham', 'ClientController@xoaSanPham');
 
 // Son Trang

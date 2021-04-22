@@ -122,18 +122,29 @@ class ClientController extends Controller
     }
 
     function loadSanPham (Request $request) {
-        // $sanpham = SanPham::join('server_games', 'san_phams.idServer', 'server_games.id')->join('like_views', 'san_phams.idLikeView', 'like_views.id')->where('idUser', $request->idUser)->select('san_phams.id', 'san_phams.tieude','san_phams.thumb', 'san_phams.noidung', 'san_phams.kieugia', 'san_phams.gia', 'san_phams.created_at', 'server_games.servername', 'like_views.sum_like', 'like_views.sum_view')->get();
-        $sanpham = Product::join('server_games', 'products.serverID', 'server_games.id')->join('like_views', 'products.likeViewID', 'like_views.id')->where('userID', $request->idUser)->select('products.id', 'products.title','products.thumbnail', 'products.content', 'products.priceType', 'products.price', 'products.created_at', 'server_games.servername',  'like_views.likeCount', 'like_views.viewCount')->get();
+        $sanpham = Product::join('server_games', 'products.serverID', 'server_games.id')
+                            ->join('like_views', 'products.likeViewID', 'like_views.id')
+                            ->where('userID', $request->idUser)
+                            ->select('products.id', 'products.title','products.thumbnail', 'products.content', 'products.priceType', 'products.price', 'products.created_at', 'server_games.servername',  'like_views.likeCount', 'like_views.viewCount')
+                            ->get();
         
         return response()->json($sanpham);
     }
 
-    // function loadChiTietSanPham (Request $request) {
-    //    $sanpham = SanPham::join('server_games', 'san_phams.idServer', 'server_games.id')->join('like_views', 'san_phams.idLikeView', 'like_views.id')->where('san_phams.id', $request->idsp)->select('san_phams.id', 'san_phams.tieude', 'san_phams.noidung', 'san_phams.kieugia', 'san_phams.gia', 'san_phams.created_at', 'server_games.servername', 'like_views.sum_like', 'like_views.sum_view')->get();
-    //     $image = SanPham::join('images', 'san_phams.id', 'images.idSanPham')->where('san_phams.id', $request->idsp)->select('images.idSanPham', 'images.name', 'images.thumbnail')->get();
+    function loadChiTietSanPham (Request $request) {
+        $sanpham = Product::join('server_games', 'products.serverID', 'server_games.id')
+                            ->join('like_views', 'products.likeViewID', 'like_views.id')
+                            ->where('products.id', $request->idsp)
+                            ->select('products.id', 'products.title', 'products.content', 'products.priceType', 'products.price', 'products.created_at', 'server_games.servername', 'like_views.likeCount', 'like_views.viewCount')
+                            ->get();
 
-    //     return response()->json(['sanpham'=>$sanpham, 'image'=>$image]);
-    // }
+        $image = Product::join('images', 'products.id', 'images.productsID')
+                        ->where('products.id', $request->idsp)
+                        ->select('images.productsID', 'images.name', 'images.thumbnail')
+                        ->get();
+
+        return response()->json(['sanpham'=>$sanpham, 'image'=>$image]);
+    }
 
     function dangBai (Request $request) {
         $rules = [];

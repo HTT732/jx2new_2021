@@ -64,16 +64,26 @@ $(document).ready(function(){
 		$("#intro-content").toggle();
 	});
 
-	$("#baiviet").click(function(){
+	$("#baiviet").on('click', function(){
 		$this = $("#baiviet");
 
-		if (!$this.hasClass('active')) {
-			console.log('zo');
-			$("[data-hidden='all']").css("display", "none");
-			$(".baiviet").toggle();
-			loadSanPham(54);
-
+		// "hack" case 
+		userID = $this.find('input[type=hidden]').val();
+		userIdReal = $('body').attr('jx2');
+		if (userID != userIdReal) {
+			alert('Danger! danger!');
+			location.reload();
 		}
+
+		if (!$this.hasClass('active')) {
+			// chỉ cho phép click 1 trần tránh gọi nhiều lần ajax 
+			$this.addClass('disable-click');
+
+			loadSanPham(userID);
+		}
+
+		$("[data-hidden='all']").css("display", "none");
+		$(".baiviet").toggle();
 	});
 
 	//hide phần thông tin các nhân hoặc phần giới thiệu khi click vào nút close
@@ -114,7 +124,8 @@ $(document).ready(function(){
 		$("#suabai").hide();
 	});
 
-	$(".btn-edit").click(function(){
+	$(document).on('click', '.btn-edit', function(){
+		console.log('zo');
 		$("#suabai").show();
 		$(".noidungbaiviet").hide();
 		$("#dangbai").hide();
@@ -165,6 +176,7 @@ function loadSanPham(idUser){
 		if ($('.baiviet #control-baiviet').hasClass('active')){
 			$('#iconLoadSanPham').show();
 		}
+
 		$('.noidungbaiviet').html('');// reset lại thông báo lỗi nếu load lần sau
 		var CSRF_TOKEN = $('meta[name="_token"]').attr('content');
 		
@@ -180,6 +192,10 @@ function loadSanPham(idUser){
 			async: true,
 			success: function(data){
 				$('#iconLoadSanPham').hide();
+
+				// remove cấm click để cho phép click
+				$('#baiviet').removeClass('disable-click');
+
 				if (data.length > 0){
 					for (var i = 0; i < data.length; i++){
 						$('#baiviet').addClass('active');
@@ -188,21 +204,21 @@ function loadSanPham(idUser){
 								'<div class="card">'+
 									'<div id="cardHeader">'+
 										'<a href="#sp'+data[i]['id']+'" data-toggle="modal" onclick="loadChiTietSanPham('+data[i]['id']+',this)">'+
-											'<img style="background:url(\''+data[i]["thumb"]+'\');"  class="thumbnail-san-pham"></a>'+
+											'<img style="background:url(\''+data[i]["thumbnail"]+'\');"  class="thumbnail-san-pham"></a>'+
 												'<i class="sp'+ data[i]['id'] +'"></i>'+
 									'</div>'+
 									'<div id="scrollStyle1" class="card-body">'+
 										'<div class="form-inline float-left"> '+
 											'<i class="fas fa-users"></i>'+
-											'<span>'+ data[i]['sum_view'] +'</span>'+
+											'<span>'+ data[i]['viewCount'] +'</span>'+
 										'</div>'+
 										'<div class="form-inline float-right">'+
 											'<i class="fas fa-thumbs-up"></i>'+
-											'<span>'+ data[i]['sum_like'] +'</span>'+
+											'<span>'+ data[i]['likeCount'] +'</span>'+
 										'</div>'+
 										'<div class="clearfix"></div>'+
 										'<h5 class="card-title mb-1">'+
-											'<a data-toggle="modal" href="#sp'+data[i]['id']+'" onclick="loadChiTietSanPham('+data[i]['id']+',this)">'+ data[i]['tieude'] +'</a>'+
+											'<a data-toggle="modal" href="#sp'+data[i]['id']+'" onclick="loadChiTietSanPham('+data[i]['id']+',this)">'+ data[i]['title'] +'</a>'+
 										'</h5>'+
 									'</div>'+
 									'<div class="card-footer p-1">'+
@@ -220,7 +236,7 @@ function loadSanPham(idUser){
 				}
 			},
 			error: function(data){
-				$('.noidungbaiviet').html('<p class="m-0 text-center text-danger w-100"><strong>Lỗi hệ thống.</strong></br>Bạn vui lòng liên hệ với Admin để khắc phúc sự cố này.</p>');
+				$('.noidungbaiviet').html('<p class="m-0 text-center text-danger w-100"><strong>Lỗi hệ thống.</strong></br>Vui lòng liên hệ với Admin để khắc phúc sự cố này.</p>');
 				$('#iconLoadSanPham').hide();
 			}
 		});
@@ -246,17 +262,38 @@ function loadChiTietSanPham(idSP, el){
 						list_img += '<p><img src="upload/source_resize/'+ image[i]['name'] +'" class="img-fluid"></p>'
 					}
 				}
-				$('#chi-tiet-san-pham').append('<div class="modal fade" id="sp'+idSP+'" role="dialog" tabindex="-1"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header py-2"><h4 class="modal-title">'+ sanpham[0]['tieude'] +'</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button></div> <div class="modal-body text-center"><p>'+ sanpham[0]['noidung'] +'</p>'+ list_img +'</div><div class="modal-footer"> <div class="form-inline" style="margin-right:10%"> Hãy <label  class="like-footer"></label> để cho ta biết đại hiệp đã ghé qua nơi đây. </div> <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button> </div> </div></div></div>'); 
+				$('#chi-tiet-san-pham').append(
+					'<div class="modal fade" id="sp'+idSP+'" role="dialog" tabindex="-1">'+
+						'<div class="modal-dialog modal-lg" role="document">'+
+							'<div class="modal-content">'+
+								'<div class="modal-header py-2">'+
+									'<h4 class="modal-title">'+ sanpham[0]['title'] +'</h4>'+
+									'<button type="button" class="close" data-dismiss="modal" aria-label="Close">'+
+										'<span aria-hidden="true">&times;</span>'+
+									'</button>'+
+								'</div>'+
+							'<div class="modal-body text-center">'+
+								'<p>'+ sanpham[0]['content'] +'</p>'+ list_img +
+							'</div>'+
+							'<div class="modal-footer">'+
+								'<div class="form-inline" style="margin-right:10%">'+
+									'Hãy <label class="like-footer"></label> để cho ta biết đại hiệp đã ghé qua nơi đây. '+
+								'</div> '+
+								'<button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>'+
+								'</div>'+
+							'</div>'+
+						'</div>'+
+					'</div>'
+				); 
 				$(el).removeAttr('onclick');
 				$('.noidungbaiviet a[href="#sp'+ idSP +'"]').removeAttr('onclick');
 				$('.noidungbaiviet button[data-target="#sp'+ idSP +'"]').removeAttr('onclick');
 				$('#chi-tiet-san-pham #sp'+idSP).modal("show");
 			}
-
 		},
 		error: function(data){
 			$('.noidungbaiviet i.sp'+idSP).addClass('loading-2');
-			console.log(data);
+			$('.noidungbaiviet').html('<p class="m-0 text-center text-danger w-100"><strong>Lỗi hệ thống.</strong></br>Vui lòng liên hệ với Admin để khắc phúc sự cố này.</p>');
 		}
 	});
 }
@@ -385,6 +422,7 @@ $(function(){
 });
 
 function dangSanPham(){
+	errors = [];
 	// Khai báo biến lấy giá trị
 	var CSRF_TOKEN = $('#dangbai input[name="dangbai_token"]').val();
 	var server = $('#dangbai select[name="server"]').val();

@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="library/fontawesome-5.5.0/css/all.css">
     <script src="ckeditor/ckeditor.js"></script>
 </head>
-<body>
+<body {{Auth::check() ? 'jx2=' . Auth::user()->id : 'jx2-body'}}>
     {{-- Thông báo lỗi đăng nhập phát sinh --}}
     @if (session('error_login'))
         <div class="alert alert-danger text-center">Dường như có lỗi đăng nhập. Bạn hãy thử lại.</div>
@@ -534,7 +534,8 @@
                         <div id="book" class="sub-control dangcapnhat">
                             {{-- Nhiệm vụ --}}
                         </div>
-                        <div id="baiviet" class="sub-control" title="Bài đăng" onclick="loadSanPham({{Auth::user()->id}})">
+                        <div id="baiviet" class="sub-control" title="Bài đăng">
+                            <input type="hidden" value="{{Auth::user()->id}}">
                             {{-- Bài đăng --}}
                         </div>
                     </ul>
