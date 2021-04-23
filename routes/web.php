@@ -53,6 +53,7 @@ Route::get('logout', [ClientController::class, 'getLogout'])->name('dangxuat');
 Route::post('load-san-pham', [ClientController::class, 'loadSanPham']);
 Route::post('dang-bai', [ClientController::class, 'dangBai'])->name('dangbai');
 Route::post('chi-tiet-san-pham', [ClientController::class, 'loadChiTietSanPham']);
+Route::post('load-all-data-product', [ClientController::class, 'loadAllDataProduct']);
 // Route::post('xoa-san-pham', 'ClientController@xoaSanPham');
 
 // Son Trang

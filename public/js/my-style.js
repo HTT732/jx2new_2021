@@ -125,7 +125,6 @@ $(document).ready(function(){
 	});
 
 	$(document).on('click', '.btn-edit', function(){
-		console.log('zo');
 		$("#suabai").show();
 		$(".noidungbaiviet").hide();
 		$("#dangbai").hide();
@@ -218,13 +217,13 @@ function loadSanPham(idUser){
 										'</div>'+
 										'<div class="clearfix"></div>'+
 										'<h5 class="card-title mb-1">'+
-											'<a data-toggle="modal" href="#sp'+data[i]['id']+'" onclick="loadChiTietSanPham('+data[i]['id']+',this)">'+ data[i]['title'] +'</a>'+
+											'<a data-toggle="modal" href="#sp'+data[i]['id']+'" onclick="loadChiTietSanPham('+data[i]['id']+', this)">'+ data[i]['title'] +'</a>'+
 										'</h5>'+
 									'</div>'+
 									'<div class="card-footer p-1">'+
 										'<button type="button" data-toggle="modal" data-target="#sp'+data[i]['id']+'" class="btn btn-primary btn-sm mx-1 px-2 py-0 float-left" onclick="loadChiTietSanPham('+data[i]['id']+',this)">Chi tiết</button>'+
 										'<button type="button" class="float-right btn btn-outline-success mx-1 px-2 py-0 btn-sm btn-del" onclick="deleteSP('+data[i]['id']+',this)">Xóa</button>'+
-										'<button type="button" class="float-right btn btn-outline-success mx-1 px-2 py-0 btn-sm btn-edit">Sửa</button>'+
+										'<button type="button" class="float-right btn btn-outline-success mx-1 px-2 py-0 btn-sm btn-edit" onclick="suaSanPham('+ data[i]['id'] +', this)">Sửa</button>'+
 									'</div>'+
 								'</div>'+
 							'</div>'
@@ -246,12 +245,14 @@ function loadSanPham(idUser){
 function loadChiTietSanPham(idSP, el){
 	$('.noidungbaiviet #cardHeader i.sp'+idSP).addClass('loading-2');
 	var CSRF_TOKEN = $('meta[name="_token"').attr('content');
+
 	$.ajax({
 		url: 'chi-tiet-san-pham',
 		type: 'post',
 		dataType: 'json',
 		data: {'_token':CSRF_TOKEN, 'idsp':idSP},
 		success: function(data){
+			// Lấy data để hiển thị
 			$('.noidungbaiviet i.sp'+idSP).removeClass('loading-2');
 			var sanpham = data.sanpham;
 			var image = data.image;
@@ -291,11 +292,70 @@ function loadChiTietSanPham(idSP, el){
 				$('#chi-tiet-san-pham #sp'+idSP).modal("show");
 			}
 		},
-		error: function(data){
+		error: function(err){
 			$('.noidungbaiviet i.sp'+idSP).addClass('loading-2');
 			$('.noidungbaiviet').html('<p class="m-0 text-center text-danger w-100"><strong>Lỗi hệ thống.</strong></br>Vui lòng liên hệ với Admin để khắc phúc sự cố này.</p>');
 		}
 	});
+}
+
+function suaSanPham(idSP, el) {
+	var $edit = $('#dangbai');
+	var CSRF_TOKEN = $('meta[name="_token"').attr('content');
+
+	$.ajax({
+		url: 'load-all-data-product',
+		type: 'post',
+		dataType: 'json',
+		data: {'_token':CSRF_TOKEN, 'idsp':idSP},
+		success: function(data) {
+			if (data.length > 0) {
+				$edit.find('select option[value='+ data[0].serverID +']').attr('selected', 'selected');
+				$edit.find('input[name=tieude]').val(data[0].title);
+				CKEDITOR.instances['noidungchitiet'].setData(data[0].content);
+
+				// show image 
+				for (i = 0; i < data.length; i++) {
+					$('#dangbai #filelist').append(
+						"<div class='thumb-img img-thumbnail'>"+
+							"<img class='img-thumbnail' src='upload/source_resize/"+ data[i].name +"'>"+
+							"<i onclick='deleteFile("+ data[i].id +")'></i>"+
+							"<p class='text-truncate text-danger'>"+
+								"<small title='"+ data[i].name +"'>"+ data[i].name +"</small>"+
+							"</p>"+
+						"</div>"
+					);
+				}
+
+				$edit.find('input[value='+ data[0].priceType +']').attr('checked');
+				$edit.find('input[name=price]').val(data[0].price);
+				$edit.find('input[name=sdt]').val(data[0].sdt);
+				$edit.find('input[name=fb]').val(data[0].fb);
+			} else {
+				$('#dangbai #show-errors-form-data .modal-body').append("<li>Sản phẩm không tồn tại.</li>");
+				$('#control-dangbai').trigger('click');
+				$('#dangbai #show-errors-form-data').show();
+			}
+			
+		},
+		error: function(err) {
+			console.log(err)
+		}
+	});
+	
+	// console.log(ajax)
+
+	var chiTietSanPham;
+
+	// if (ajax.XHR.status == 200) {
+	// 	chiTietSanPham = JSON.parse(ajax.XHR.response);
+	// 	console.log(chiTietSanPham)
+	// }
+
+	// if (chiTietSanPham.length > 0) {
+	// 	el = $('#dangbai');
+
+	// }
 }
 
 // Show hình ảnh trước upload

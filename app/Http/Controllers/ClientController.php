@@ -146,6 +146,20 @@ class ClientController extends Controller
         return response()->json(['sanpham'=>$sanpham, 'image'=>$image]);
     }
 
+    // edit san pham 
+    function loadAllDataProduct(Request $request) {
+        $data = User::join('products', 'userID', 'users.id')
+                ->join('images', 'images.productsID', 'products.id')
+                ->where('users.id', Auth::user()->id)
+                ->where('products.id', $request->idsp)
+                ->select(
+                    'products.title', 'products.content', 'products.serverID',
+                    'products.price', 'products.priceType', 'users.fb', 'users.sdt',
+                    'images.id', 'images.name'
+                )->get();
+        return response()->json($data);
+    }
+
     function dangBai (Request $request) {
         $rules = [];
         $rules['server'] = 'required';
